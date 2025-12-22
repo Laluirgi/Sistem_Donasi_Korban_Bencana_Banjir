@@ -15,13 +15,16 @@ public class DashboardFrame extends JFrame {
 
         JButton btnList = new JButton("Daftar Donasi");
         JButton btnInput = new JButton("Input Donasi");
+        JButton btnLaporan = new JButton("Laporan Donasi");
 
         btnList.addActionListener(e -> new DonasiListFrame());
         btnInput.addActionListener(e -> new DonasiFormFrame());
+        btnLaporan.addActionListener(e -> new LaporanFrame());
 
         JPanel panel = new JPanel();
         panel.add(btnList);
         panel.add(btnInput);
+        panel.add(btnLaporan);
 
         add(panel);
         setVisible(true);
