@@ -4,16 +4,27 @@ import com.donasi.banjir.model.Donasi;
 import com.donasi.banjir.util.FileUtil;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 
 public class DonasiRepository {
 
-    public static ArrayList<Donasi> getSemuaDonasi() {
-        ArrayList<Donasi> list = FileUtil.bacaDataDonasi();
+    private static ArrayList<Donasi> data = FileUtil.bacaData();
 
-        // Sorting berdasarkan tanggal terbaru
-        list.sort(Comparator.comparing(Donasi::getTanggalDonasi).reversed());
+    public static ArrayList<Donasi> getAll() {
+        return data;
+    }
 
-        return list;
+    public static void tambah(Donasi d) {
+        data.add(d);
+        FileUtil.simpanSemua(data);
+    }
+
+    public static void update(int index, Donasi d) {
+        data.set(index, d);
+        FileUtil.simpanSemua(data);
+    }
+
+    public static void hapus(int index) {
+        data.remove(index);
+        FileUtil.simpanSemua(data);
     }
 }

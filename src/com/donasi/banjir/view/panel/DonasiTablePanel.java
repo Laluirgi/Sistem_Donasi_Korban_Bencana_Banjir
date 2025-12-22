@@ -5,26 +5,43 @@ import com.donasi.banjir.model.Donasi;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.util.ArrayList;
+import java.awt.*;
 
 public class DonasiTablePanel extends JPanel {
 
+    private JTable table;
+    private DefaultTableModel tableModel;
+
     public DonasiTablePanel() {
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        String[] kolom = {
-                "Nama Donatur",
-                "Jumlah Donasi",
-                "Jenis Donasi",
-                "Tanggal"
-        };
+        setLayout(new BorderLayout(10, 10));
 
-        DefaultTableModel tableModel = new DefaultTableModel(kolom, 0);
-        JTable table = new JTable(tableModel);
+        // Kolom tabel
+        tableModel = new DefaultTableModel(
+                new String[]{"Nama Donatur", "Jumlah", "Jenis Donasi", "Tanggal"}, 0
+        );
 
-        ArrayList<Donasi> dataDonasi = DonasiRepository.getSemuaDonasi();
+        table = new JTable(tableModel);
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        for (Donasi d : dataDonasi) {
+        JScrollPane scrollPane = new JScrollPane(table);
+
+        JButton btnHapus = new JButton("Hapus Data Donasi");
+        btnHapus.addActionListener(e -> hapusData());
+
+        JPanel panelButton = new JPanel();
+        panelButton.add(btnHapus);
+
+        add(scrollPane, BorderLayout.CENTER);
+        add(panelButton, BorderLayout.SOUTH);
+
+        refreshTable();
+    }
+
+    private void refreshTable() {
+        tableModel.setRowCount(0);
+
+        for (Donasi d : DonasiRepository.getAll()) {
             tableModel.addRow(new Object[]{
                     d.getNamaDonatur(),
                     d.getJumlahDonasi(),
@@ -32,7 +49,30 @@ public class DonasiTablePanel extends JPanel {
                     d.getTanggalDonasi()
             });
         }
+    }
 
-        add(new JScrollPane(table));
+    private void hapusData() {
+        int selectedRow = table.getSelectedRow();
+
+        if (selectedRow >= 0) {
+            int konfirmasi = JOptionPane.showConfirmDialog(
+                    this,
+                    "Yakin ingin menghapus data donasi ini?",
+                    "Konfirmasi Hapus",
+                    JOptionPane.YES_NO_OPTION
+            );
+
+            if (konfirmasi == JOptionPane.YES_OPTION) {
+                DonasiRepository.hapus(selectedRow);
+                refreshTable();
+            }
+        } else {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Silakan pilih data yang ingin dihapus!",
+                    "Peringatan",
+                    JOptionPane.WARNING_MESSAGE
+            );
+        }
     }
 }

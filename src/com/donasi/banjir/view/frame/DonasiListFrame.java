@@ -7,12 +7,13 @@ import javax.swing.*;
 public class DonasiListFrame extends JFrame {
 
     public DonasiListFrame() {
-        setTitle("Daftar Donasi Korban Banjir");
-        setSize(750, 400);
+        setTitle("Daftar Donasi");
+        setSize(600, 400);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         add(new DonasiTablePanel());
         setVisible(true);
     }
 }
+
