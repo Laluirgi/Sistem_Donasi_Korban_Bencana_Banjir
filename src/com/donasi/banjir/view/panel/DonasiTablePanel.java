@@ -6,11 +6,14 @@ import com.donasi.banjir.model.Donasi;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.time.format.DateTimeFormatter;
 
 public class DonasiTablePanel extends JPanel {
 
     private JTable table;
     private DefaultTableModel tableModel;
+    private final DateTimeFormatter formatter =
+            DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
     public DonasiTablePanel() {
 
@@ -46,7 +49,7 @@ public class DonasiTablePanel extends JPanel {
                     d.getNamaDonatur(),
                     d.getJumlahDonasi(),
                     d.getJenisDonasi(),
-                    d.getTanggalDonasi()
+                    d.getTanggalDonasi().format(formatter)
             });
         }
     }

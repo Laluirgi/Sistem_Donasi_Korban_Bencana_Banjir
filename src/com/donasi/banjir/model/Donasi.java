@@ -1,34 +1,37 @@
 package com.donasi.banjir.model;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Donasi {
-    private String namaDonatur;
-    private double jumlahDonasi;
-    private String jenisDonasi;
-    private LocalDate tanggalDonasi;
 
-    public Donasi(String namaDonatur, double jumlahDonasi, String jenisDonasi, LocalDate tanggalDonasi) {
+    private LocalDateTime tanggalDonasi;
+    private String namaDonatur;
+    private String jenisDonasi;
+    private int jumlahDonasi;
+
+    // ===============================
+    // FINAL: semua donasi pasti ada jam
+    // ===============================
+    public Donasi(String namaDonatur, String jenisDonasi, int jumlahDonasi) {
+        this.tanggalDonasi = LocalDateTime.now(); // JAM NYATA
         this.namaDonatur = namaDonatur;
-        this.jumlahDonasi = jumlahDonasi;
         this.jenisDonasi = jenisDonasi;
-        this.tanggalDonasi = tanggalDonasi;
+        this.jumlahDonasi = jumlahDonasi;
+    }
+
+    public LocalDateTime getTanggalDonasi() {
+        return tanggalDonasi;
     }
 
     public String getNamaDonatur() {
         return namaDonatur;
     }
 
-    public double getJumlahDonasi() {
-        return jumlahDonasi;
-    }
-
     public String getJenisDonasi() {
         return jenisDonasi;
     }
 
-    public LocalDate getTanggalDonasi() {
-        return tanggalDonasi;
+    public int getJumlahDonasi() {
+        return jumlahDonasi;
     }
 }
-

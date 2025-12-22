@@ -5,7 +5,6 @@ import com.donasi.banjir.model.Donasi;
 
 import javax.swing.*;
 import java.awt.*;
-import java.time.LocalDate;
 
 public class DonasiFormFrame extends JFrame {
 
@@ -23,7 +22,6 @@ public class DonasiFormFrame extends JFrame {
         cbJenis = new JComboBox<>(new String[]{"Uang", "Pakaian", "Sembako"});
 
         JButton btnSimpan = new JButton("Simpan");
-
         btnSimpan.addActionListener(e -> simpanData());
 
         setLayout(new GridLayout(5, 2, 10, 10));
@@ -41,22 +39,27 @@ public class DonasiFormFrame extends JFrame {
 
     private void simpanData() {
         try {
-            String nama = txtNama.getText();
-            double jumlah = Double.parseDouble(txtJumlah.getText());
+            String nama = txtNama.getText().trim();
+            int jumlah = Integer.parseInt(txtJumlah.getText().trim());
             String jenis = cbJenis.getSelectedItem().toString();
 
             if (nama.isEmpty()) {
                 throw new Exception("Nama tidak boleh kosong");
             }
 
-            Donasi d = new Donasi(nama, jumlah, jenis, LocalDate.now());
-            DonasiRepository.tambah(d);
+            if (jumlah <= 0) {
+                throw new Exception("Jumlah harus lebih dari 0");
+            }
+
+            // ✅ SIMPAN DATA
+            Donasi donasi = new Donasi(nama, jenis, jumlah);
+            DonasiRepository.tambah(donasi);
 
             JOptionPane.showMessageDialog(this, "Donasi berhasil disimpan");
             dispose();
 
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Jumlah harus angka");
+            JOptionPane.showMessageDialog(this, "Jumlah harus berupa angka");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
