@@ -1,89 +1,66 @@
 package com.donasi.banjir.view.frame;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.Map;
 
 public class AdminLoginFrame extends JFrame {
-
-    private JTextField txtUsername;
-    private JPasswordField txtPassword;
-
-    private final Map<String, String> adminAccounts = Map.of(
-            "I", "2",
-            "Ariel", "202410370110434"
-    );
+    private final JTextField txtUsername;
+    private final JPasswordField txtPassword;
+    private final Map<String, String> adminAccounts = Map.of("I", "2", "Ariel", "202410370110434");
 
     public AdminLoginFrame() {
-        setTitle("Login Admin");
-        setSize(400, 250);
+        setTitle("Admin Login");
+        setSize(350, 300);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        JPanel form = new JPanel(new GridLayout(2, 2, 10, 10));
+        JPanel pnl = new JPanel(new GridLayout(5, 1, 5, 5));
+        pnl.setBorder(new EmptyBorder(20, 30, 20, 30));
+
         txtUsername = new JTextField();
         txtPassword = new JPasswordField();
+        JButton btnLogin = new JButton("LOGIN");
+        JButton btnBatal = new JButton("BATAL");
 
-        form.add(new JLabel("Username"));
-        form.add(txtUsername);
-        form.add(new JLabel("Password"));
-        form.add(txtPassword);
-
-        JButton btnLogin = new JButton("Login");
-        JButton btnKembali = new JButton("Kembali");
+        styleButton(btnLogin, new Color(25, 118, 210));
+        styleButton(btnBatal, new Color(211, 47, 47));
 
         btnLogin.addActionListener(e -> prosesLogin());
-        btnKembali.addActionListener(e -> {
-            new TampilanAwalFrame();
-            dispose();
-        });
+        btnBatal.addActionListener(e -> { new TampilanAwalFrame(); dispose(); });
 
-        JPanel panelButton = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        panelButton.add(btnKembali);
-        panelButton.add(btnLogin);
+        pnl.add(new JLabel("Username"));
+        pnl.add(txtUsername);
+        pnl.add(new JLabel("Password"));
+        pnl.add(txtPassword);
 
-        setLayout(new BorderLayout(10, 10));
-        add(form, BorderLayout.CENTER);
-        add(panelButton, BorderLayout.SOUTH);
+        JPanel btnPnl = new JPanel(new GridLayout(1, 2, 10, 0));
+        btnPnl.add(btnBatal);
+        btnPnl.add(btnLogin);
+        pnl.add(btnPnl);
 
+        add(pnl);
         setVisible(true);
     }
 
+    private void styleButton(JButton btn, Color bgColor) {
+        btn.setBackground(bgColor);
+        btn.setForeground(Color.WHITE);
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        btn.setOpaque(true);
+        btn.setContentAreaFilled(true);
+        btn.setBorderPainted(false);
+        btn.setFocusPainted(false);
+    }
 
     private void prosesLogin() {
-        String username = txtUsername.getText().trim();
-        String password = new String(txtPassword.getPassword()).trim();
-
-        // Field kosong
-        if (username.isEmpty() || password.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    "Username dan Password wajib diisi",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
+        String u = txtUsername.getText();
+        String p = new String(txtPassword.getPassword());
+        if (adminAccounts.containsKey(u) && adminAccounts.get(u).equals(p)) {
+            new DashboardAdminFrame(); dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, "Gagal Login");
         }
-
-        // Username tidak ditemukan
-        if (!adminAccounts.containsKey(username)) {
-            JOptionPane.showMessageDialog(this,
-                    "Username tidak terdaftar",
-                    "Login Gagal",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        // Password salah
-        if (!adminAccounts.get(username).equals(password)) {
-            JOptionPane.showMessageDialog(this,
-                    "Password salah",
-                    "Login Gagal",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        // Login berhasil
-        JOptionPane.showMessageDialog(this, "Login berhasil");
-        new DashboardAdminFrame();
-        dispose();
     }
 }

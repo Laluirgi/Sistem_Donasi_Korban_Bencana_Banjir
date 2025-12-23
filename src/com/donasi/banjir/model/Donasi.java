@@ -9,21 +9,19 @@ public class Donasi {
     private String jenisDonasi;
     private int jumlahDonasi;
 
-    // ✔ UNTUK INPUT BARU (FORM)
     public Donasi(String namaDonatur, String jenisDonasi, int jumlahDonasi) {
         this.namaDonatur = namaDonatur;
         this.jenisDonasi = jenisDonasi;
         this.jumlahDonasi = jumlahDonasi;
-        this.tanggalDonasi = LocalDateTime.now(); // ✅ SEKALI SAJA
+        this.tanggalDonasi = LocalDateTime.now();
     }
 
-    // ✔ UNTUK LOAD DARI CSV (LAPORAN)
     public Donasi(String namaDonatur, String jenisDonasi, int jumlahDonasi,
                   LocalDateTime tanggalDonasi) {
         this.namaDonatur = namaDonatur;
         this.jenisDonasi = jenisDonasi;
         this.jumlahDonasi = jumlahDonasi;
-        this.tanggalDonasi = tanggalDonasi; // ✅ RESTORE
+        this.tanggalDonasi = tanggalDonasi;
     }
 
     public LocalDateTime getTanggalDonasi() {

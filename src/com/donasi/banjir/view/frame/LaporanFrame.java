@@ -4,9 +4,9 @@ import com.donasi.banjir.data.DonasiRepository;
 import com.donasi.banjir.model.Donasi;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
@@ -17,181 +17,160 @@ public class LaporanFrame extends JFrame {
     private JTextField txtSearch;
     private JComboBox<String> cmbSort;
     private JLabel lblTotal;
-
     private JTable table;
     private DefaultTableModel tableModel;
-
-    private final DateTimeFormatter formatter =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yyyy, HH:mm");
 
     public LaporanFrame() {
-        setTitle("Laporan Donasi");
-        setSize(800, 500);
+        setTitle("Laporan Manajemen Donasi");
+        setSize(900, 600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
+        try { setIconImage(new ImageIcon("Resource/Icons/app_icon.png").getImage()); } catch (Exception ignored) {}
+
         initComponent();
-
         loadData(DonasiRepository.getAll());
-
         setVisible(true);
     }
 
-    private void updateData() {
-        int row = table.getSelectedRow();
-
-        if (row == -1) {
-            JOptionPane.showMessageDialog(this, "Pilih data yang akan diupdate");
-            return;
-        }
-
-        String nama = JOptionPane.showInputDialog(this,
-                "Nama Donatur",
-                table.getValueAt(row, 1));
-
-        String jenis = JOptionPane.showInputDialog(this,
-                "Jenis Donasi",
-                table.getValueAt(row, 2));
-
-        String jumlahStr = JOptionPane.showInputDialog(this,
-                "Jumlah Donasi",
-                table.getValueAt(row, 3));
-
-        if (nama == null || jenis == null || jumlahStr == null) return;
-
-        try {
-            int jumlah = Integer.parseInt(jumlahStr);
-
-            Donasi donasiBaru = new Donasi(nama, jenis, jumlah);
-            DonasiRepository.update(row, donasiBaru);
-
-            loadData(DonasiRepository.getAll());
-            JOptionPane.showMessageDialog(this, "Data berhasil diupdate");
-
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Jumlah harus angka");
-        }
-    }
-
-    private void deleteData() {
-        int row = table.getSelectedRow();
-
-        if (row == -1) {
-            JOptionPane.showMessageDialog(this, "Pilih data yang akan dihapus");
-            return;
-        }
-
-        int confirm = JOptionPane.showConfirmDialog(this,
-                "Yakin ingin menghapus data ini?",
-                "Konfirmasi",
-                JOptionPane.YES_NO_OPTION);
-
-        if (confirm == JOptionPane.YES_OPTION) {
-            DonasiRepository.hapus(row);
-            loadData(DonasiRepository.getAll());
-            JOptionPane.showMessageDialog(this, "Data berhasil dihapus");
-        }
-    }
-
     private void initComponent() {
-        setLayout(new BorderLayout());
+        JPanel mainPanel = new JPanel(new BorderLayout(15, 15));
+        mainPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
 
-        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        // --- TOP PANEL (Search & Sort) ---
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        topPanel.setBackground(new Color(240, 240, 240));
 
-        txtSearch = new JTextField(20);
+        txtSearch = new JTextField(15);
         cmbSort = new JComboBox<>(new String[]{
-                "Tanggal Terbaru",
-                "Tanggal Terlama",
-                "Jumlah Terbesar",
-                "Jumlah Terkecil"
+                "Tanggal Terbaru", "Tanggal Terlama", "Jumlah Terbesar", "Jumlah Terkecil"
         });
+        JButton btnFilter = new JButton("Cari & Urutkan");
+        btnFilter.setBackground(new Color(33, 150, 243));
+        btnFilter.setForeground(Color.BLUE);
 
-        JButton btnFilter = new JButton("Terapkan");
-
-        topPanel.add(new JLabel("Cari:"));
+        topPanel.add(new JLabel("Keyword:"));
         topPanel.add(txtSearch);
         topPanel.add(new JLabel("Urutkan:"));
         topPanel.add(cmbSort);
         topPanel.add(btnFilter);
 
+        // --- CENTER PANEL (Table) ---
         tableModel = new DefaultTableModel(
-                new String[]{"Tanggal & Waktu", "Donatur", "Jenis", "Jumlah"}, 0
-        );
+                new String[]{"Waktu Donasi", "Nama Donatur", "Jenis", "Jumlah (Rp/Unit)"}, 0
+        ) {
+            @Override
+            public boolean isCellEditable(int row, int column) { return false; }
+        };
+
         table = new JTable(tableModel);
+        table.setRowHeight(30);
+        table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 12));
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
         JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
 
-        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        // --- BOTTOM PANEL (Action & Info) ---
+        JPanel bottomPanel = new JPanel(new BorderLayout());
 
-        JButton btnUpdate = new JButton("Update");
-        JButton btnDelete = new JButton("Delete");
+        JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        JButton btnUpdate = new JButton("Edit Data");
+        JButton btnDelete = new JButton("Hapus");
         JButton btnKembali = new JButton("Kembali");
 
-        lblTotal = new JLabel("Total Donasi: Rp 0");
+        btnDelete.setForeground(Color.RED);
 
+        actionPanel.add(btnUpdate);
+        actionPanel.add(btnDelete);
+        actionPanel.add(btnKembali);
+
+        lblTotal = new JLabel("Total Donasi: Rp 0");
+        lblTotal.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        lblTotal.setBorder(new EmptyBorder(0, 0, 0, 10));
+
+        bottomPanel.add(actionPanel, BorderLayout.WEST);
+        bottomPanel.add(lblTotal, BorderLayout.EAST);
+
+        mainPanel.add(topPanel, BorderLayout.NORTH);
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
+
+        add(mainPanel);
+
+        btnFilter.addActionListener(e -> applyFilter());
         btnUpdate.addActionListener(e -> updateData());
         btnDelete.addActionListener(e -> deleteData());
         btnKembali.addActionListener(e -> {
             new DashboardAdminFrame();
             dispose();
         });
-
-        bottomPanel.add(btnUpdate);
-        bottomPanel.add(btnDelete);
-        bottomPanel.add(btnKembali);
-        bottomPanel.add(lblTotal);
-
-        add(topPanel, BorderLayout.NORTH);
-        add(scrollPane, BorderLayout.CENTER);
-        add(bottomPanel, BorderLayout.SOUTH);
-
-        btnFilter.addActionListener(e -> applyFilter());
     }
 
     private void loadData(List<Donasi> data) {
         tableModel.setRowCount(0);
-        int total = 0;
-
+        long total = 0;
         for (Donasi d : data) {
-
-            LocalDateTime waktu = d.getTanggalDonasi();
-            String waktuFormatted = waktu != null
-                    ? waktu.format(formatter)
-                    : "-";
-
             tableModel.addRow(new Object[]{
-                    waktuFormatted,
+                    d.getTanggalDonasi().format(formatter),
                     d.getNamaDonatur(),
                     d.getJenisDonasi(),
-                    d.getJumlahDonasi()
+                    String.format("%, d", d.getJumlahDonasi())
             });
-
             total += d.getJumlahDonasi();
         }
-
-        lblTotal.setText("Total Donasi: Rp " + total);
+        lblTotal.setText("Total: " + String.format("%, d", total));
     }
 
     private void applyFilter() {
         String keyword = txtSearch.getText().toLowerCase();
-
         List<Donasi> filtered = DonasiRepository.getAll().stream()
-                .filter(d ->
-                        d.getNamaDonatur().toLowerCase().contains(keyword) ||
-                                d.getJenisDonasi().toLowerCase().contains(keyword)
-                )
+                .filter(d -> d.getNamaDonatur().toLowerCase().contains(keyword) ||
+                        d.getJenisDonasi().toLowerCase().contains(keyword))
                 .collect(Collectors.toList());
 
-        Comparator<Donasi> comparator;
+        Comparator<Donasi> comp = switch (cmbSort.getSelectedIndex()) {
+            case 1 -> Comparator.comparing(Donasi::getTanggalDonasi);
+            case 2 -> Comparator.comparing(Donasi::getJumlahDonasi).reversed();
+            case 3 -> Comparator.comparing(Donasi::getJumlahDonasi);
+            default -> Comparator.comparing(Donasi::getTanggalDonasi).reversed();
+        };
 
-        switch (cmbSort.getSelectedIndex()) {
-            case 1 -> comparator = Comparator.comparing(Donasi::getTanggalDonasi);
-            case 2 -> comparator = Comparator.comparing(Donasi::getJumlahDonasi).reversed();
-            case 3 -> comparator = Comparator.comparing(Donasi::getJumlahDonasi);
-            default -> comparator = Comparator.comparing(Donasi::getTanggalDonasi).reversed();
-        }
-
-        filtered.sort(comparator);
+        filtered.sort(comp);
         loadData(filtered);
     }
 
+    private void updateData() {
+        int row = table.getSelectedRow();
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this, "Pilih baris pada tabel terlebih dahulu!");
+            return;
+        }
+
+        String nama = JOptionPane.showInputDialog(this, "Edit Nama:", table.getValueAt(row, 1));
+        if (nama == null) return;
+
+        String jumlahStr = JOptionPane.showInputDialog(this, "Edit Jumlah:", table.getValueAt(row, 3).toString().replace(" ", "").replace(",", ""));
+        if (jumlahStr == null) return;
+
+        try {
+            int jumlah = Integer.parseInt(jumlahStr);
+            DonasiRepository.update(row, new Donasi(nama, table.getValueAt(row, 2).toString(), jumlah));
+            loadData(DonasiRepository.getAll());
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Gagal update: Pastikan jumlah berupa angka.");
+        }
+    }
+
+    private void deleteData() {
+        int row = table.getSelectedRow();
+        if (row == -1) return;
+
+        int confirm = JOptionPane.showConfirmDialog(this, "Hapus data ini?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            DonasiRepository.hapus(row);
+            loadData(DonasiRepository.getAll());
+        }
+    }
 }

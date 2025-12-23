@@ -2,23 +2,27 @@ package com.donasi.banjir.view.frame;
 
 import com.donasi.banjir.data.DonasiRepository;
 import com.donasi.banjir.model.Donasi;
-
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class DonasiFormFrame extends JFrame {
-
-    private JTextField txtNama, txtJumlah;
-    private JComboBox<String> cbJenis;
+    private final JTextField txtNama;
+    private final JTextField txtJumlah;
+    private final JComboBox<String> cbJenis;
 
     public DonasiFormFrame() {
         setTitle("Form Donasi");
-        setSize(450, 300);
+        setSize(450, 350);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        try { setIconImage(new ImageIcon("Resource/Icons/app_icon.png").getImage()); } catch (Exception ignored) {}
 
-        JPanel form = new JPanel(new GridLayout(3, 2, 10, 10));
+        JPanel content = new JPanel(new BorderLayout(15, 15));
+        content.setBorder(new EmptyBorder(25, 25, 25, 25));
 
+        // Form Layout
+        JPanel form = new JPanel(new GridLayout(3, 2, 10, 15));
         txtNama = new JTextField();
         txtJumlah = new JTextField();
         cbJenis = new JComboBox<>(new String[]{"Uang", "Pakaian", "Sembako"});
@@ -30,50 +34,50 @@ public class DonasiFormFrame extends JFrame {
         form.add(new JLabel("Jenis Donasi"));
         form.add(cbJenis);
 
+        // Buttons
+        JPanel panelButton = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         JButton btnSimpan = new JButton("Simpan");
         JButton btnKembali = new JButton("Kembali");
 
-        btnSimpan.addActionListener(e -> simpanData());
-        btnKembali.addActionListener(e -> {
-            new TampilanAwalFrame();
-            dispose();
-        });
+        // Styling
+        styleButton(btnSimpan, new Color(76, 175, 80)); // Hijau
+        styleButton(btnKembali, new Color(158, 158, 158)); // Abu-abu
 
-        JPanel panelButton = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        btnSimpan.addActionListener(e -> simpanData());
+        btnKembali.addActionListener(e -> { new TampilanAwalFrame(); dispose(); });
+
         panelButton.add(btnKembali);
         panelButton.add(btnSimpan);
 
-        setLayout(new BorderLayout(10, 10));
-        add(form, BorderLayout.CENTER);
-        add(panelButton, BorderLayout.SOUTH);
+        content.add(new JLabel("Isi Data Donasi", SwingConstants.CENTER), BorderLayout.NORTH);
+        content.add(form, BorderLayout.CENTER);
+        content.add(panelButton, BorderLayout.SOUTH);
 
+        add(content);
         setVisible(true);
     }
 
+    private void styleButton(JButton btn, Color bgColor) {
+        btn.setBackground(bgColor);
+        btn.setForeground(Color.WHITE);
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        btn.setOpaque(true);
+        btn.setContentAreaFilled(true);
+        btn.setBorderPainted(false);
+        btn.setFocusPainted(false);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    }
 
     private void simpanData() {
         try {
             String nama = txtNama.getText().trim();
             int jumlah = Integer.parseInt(txtJumlah.getText().trim());
-            String jenis = cbJenis.getSelectedItem().toString();
-
-            if (nama.isEmpty()) {
-                throw new Exception("Nama tidak boleh kosong");
-            }
-
-            if (jumlah <= 0) {
-                throw new Exception("Jumlah harus lebih dari 0");
-            }
-
-            Donasi donasi = new Donasi(nama, jenis, jumlah);
-            DonasiRepository.tambah(donasi);
-
-            JOptionPane.showMessageDialog(this, "Donasi berhasil disimpan");
-
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Jumlah harus berupa angka");
+            if (nama.isEmpty()) throw new Exception("Nama kosong");
+            DonasiRepository.tambah(new Donasi(nama, cbJenis.getSelectedItem().toString(), jumlah));
+            JOptionPane.showMessageDialog(this, "Berhasil!");
+            txtNama.setText(""); txtJumlah.setText("");
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, e.getMessage());
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
         }
     }
 }
