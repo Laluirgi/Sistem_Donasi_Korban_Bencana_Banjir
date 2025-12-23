@@ -1,0 +1,38 @@
+package com.donasi.banjir.data;
+
+import com.donasi.banjir.model.Donasi;
+import com.donasi.banjir.util.FileUtil;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class DonasiRepository {
+
+    private static ArrayList<Donasi> data;
+
+    static {
+        data = FileUtil.bacaData();
+    }
+
+    public static List<Donasi> getAll() {
+        return new ArrayList<>(data);
+    }
+
+    public static void tambah(Donasi d) {
+        if (d == null) return;
+        data.add(d);
+        FileUtil.simpanSemua(data);
+    }
+
+    public static void update(int index, Donasi d) {
+        if (index < 0 || index >= data.size() || d == null) return;
+        data.set(index, d);
+        FileUtil.simpanSemua(data);
+    }
+
+    public static void hapus(int index) {
+        if (index < 0 || index >= data.size()) return;
+        data.remove(index);
+        FileUtil.simpanSemua(data);
+    }
+}
