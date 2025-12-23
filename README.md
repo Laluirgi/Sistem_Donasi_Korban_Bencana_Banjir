@@ -1,6 +1,6 @@
 # Sistem Donasi Korban Bencana Banjir
 
-Sistem Donasi Korban Bencana Banjir merupakan aplikasi desktop berbasis **Java Swing** yang digunakan untuk mengelola data donasi bagi korban bencana banjir. Aplikasi ini dirancang dengan menerapkan konsep **Pemrograman Berorientasi Objek (PBO)** serta penyimpanan data menggunakan **file CSV**.
+Sistem Donasi Korban Bencana Banjir merupakan sistem berbasis **Java Swing** yang digunakan untuk mengelola data donasi bagi korban bencana banjir. Aplikasi ini dirancang dengan menerapkan konsep penyimpanan data menggunakan **file CSV**.
 
 ---
 
