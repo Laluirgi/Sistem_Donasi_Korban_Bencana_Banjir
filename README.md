@@ -42,37 +42,10 @@ Sistem Donasi Korban Bencana Banjir merupakan aplikasi desktop berbasis **Java S
 
 ---
 
-## 📂 Struktur Package
-
-com.donasi.banjir
-├── Main.java
-├── model
-│ └── Donasi.java
-├── data
-│ └── DonasiRepository.java
-├── util
-│ └── FileUtil.java
-└── view
-├── frame
-│ ├── MenuAwalFrame.java
-│ ├── DonasiFormFrame.java
-│ ├── AdminLoginFrame.java
-│ ├── AdminDashboardFrame.java
-│ └── LaporanFrame.java
-
-yaml
-Salin kode
-
----
-
 ## 💾 Penyimpanan Data
 
 Data donasi disimpan secara permanen menggunakan file:
 data/donasi.csv
-
-yaml
-Salin kode
-Data akan tetap tersedia meskipun aplikasi ditutup dan dibuka kembali.
 
 ---
 
@@ -80,8 +53,8 @@ Data akan tetap tersedia meskipun aplikasi ditutup dan dibuka kembali.
 
 | Username | Password |
 |--------|----------|
-| admin1 | admin123 |
-| admin2 | admin456 |
+| I | 2 |
+| Ariel  | 202410370110434 |
 
 ---
 
@@ -91,12 +64,6 @@ Data akan tetap tersedia meskipun aplikasi ditutup dan dibuka kembali.
 2. Clone repository ini
 3. Buka project menggunakan **IntelliJ IDEA**
 4. Jalankan file `Main.java`
-
----
-
-## 📚 Catatan
-
-Aplikasi ini dibuat untuk memenuhi tugas praktikum mata kuliah **Pemrograman Berorientasi Objek** dengan menerapkan konsep GUI, file handling, exception handling, serta penggunaan GitHub.
 
 ---
 
