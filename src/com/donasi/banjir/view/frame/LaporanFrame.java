@@ -28,22 +28,74 @@ public class LaporanFrame extends JFrame {
         setTitle("Laporan Donasi");
         setSize(800, 500);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         initComponent();
 
-        // UPDATE: load semua data saat frame dibuka
         loadData(DonasiRepository.getAll());
 
-        setVisible(true); // UPDATE: pastikan frame muncul
+        setVisible(true);
+    }
+
+    private void updateData() {
+        int row = table.getSelectedRow();
+
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this, "Pilih data yang akan diupdate");
+            return;
+        }
+
+        String nama = JOptionPane.showInputDialog(this,
+                "Nama Donatur",
+                table.getValueAt(row, 1));
+
+        String jenis = JOptionPane.showInputDialog(this,
+                "Jenis Donasi",
+                table.getValueAt(row, 2));
+
+        String jumlahStr = JOptionPane.showInputDialog(this,
+                "Jumlah Donasi",
+                table.getValueAt(row, 3));
+
+        if (nama == null || jenis == null || jumlahStr == null) return;
+
+        try {
+            int jumlah = Integer.parseInt(jumlahStr);
+
+            Donasi donasiBaru = new Donasi(nama, jenis, jumlah);
+            DonasiRepository.update(row, donasiBaru);
+
+            loadData(DonasiRepository.getAll());
+            JOptionPane.showMessageDialog(this, "Data berhasil diupdate");
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Jumlah harus angka");
+        }
+    }
+
+    private void deleteData() {
+        int row = table.getSelectedRow();
+
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this, "Pilih data yang akan dihapus");
+            return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "Yakin ingin menghapus data ini?",
+                "Konfirmasi",
+                JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            DonasiRepository.hapus(row);
+            loadData(DonasiRepository.getAll());
+            JOptionPane.showMessageDialog(this, "Data berhasil dihapus");
+        }
     }
 
     private void initComponent() {
         setLayout(new BorderLayout());
 
-        // ===============================
-        // PANEL ATAS (SEARCH + SORT)
-        // ===============================
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
         txtSearch = new JTextField(20);
@@ -62,44 +114,45 @@ public class LaporanFrame extends JFrame {
         topPanel.add(cmbSort);
         topPanel.add(btnFilter);
 
-        // ===============================
-        // TABEL DATA
-        // ===============================
         tableModel = new DefaultTableModel(
                 new String[]{"Tanggal & Waktu", "Donatur", "Jenis", "Jumlah"}, 0
         );
         table = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(table);
 
-        // ===============================
-        // PANEL BAWAH (TOTAL)
-        // ===============================
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+
+        JButton btnUpdate = new JButton("Update");
+        JButton btnDelete = new JButton("Delete");
+        JButton btnKembali = new JButton("Kembali");
+
         lblTotal = new JLabel("Total Donasi: Rp 0");
+
+        btnUpdate.addActionListener(e -> updateData());
+        btnDelete.addActionListener(e -> deleteData());
+        btnKembali.addActionListener(e -> {
+            new DashboardAdminFrame();
+            dispose();
+        });
+
+        bottomPanel.add(btnUpdate);
+        bottomPanel.add(btnDelete);
+        bottomPanel.add(btnKembali);
         bottomPanel.add(lblTotal);
 
         add(topPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
         add(bottomPanel, BorderLayout.SOUTH);
 
-        // ===============================
-        // EVENT FILTER
-        // ===============================
         btnFilter.addActionListener(e -> applyFilter());
     }
 
-    // ===============================
-    // UPDATE: load data + total donasi
-    // ===============================
     private void loadData(List<Donasi> data) {
         tableModel.setRowCount(0);
         int total = 0;
 
         for (Donasi d : data) {
 
-            // ===============================
-            // UPDATE: format tanggal + waktu
-            // ===============================
             LocalDateTime waktu = d.getTanggalDonasi();
             String waktuFormatted = waktu != null
                     ? waktu.format(formatter)
@@ -118,9 +171,6 @@ public class LaporanFrame extends JFrame {
         lblTotal.setText("Total Donasi: Rp " + total);
     }
 
-    // ===============================
-    // UPDATE: searching & sorting
-    // ===============================
     private void applyFilter() {
         String keyword = txtSearch.getText().toLowerCase();
 
@@ -143,4 +193,5 @@ public class LaporanFrame extends JFrame {
         filtered.sort(comparator);
         loadData(filtered);
     }
+
 }

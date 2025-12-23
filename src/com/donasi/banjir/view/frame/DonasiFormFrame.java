@@ -12,30 +12,44 @@ public class DonasiFormFrame extends JFrame {
     private JComboBox<String> cbJenis;
 
     public DonasiFormFrame() {
-        setTitle("Input Donasi");
-        setSize(400, 300);
+        setTitle("Form Donasi");
+        setSize(450, 300);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
+        JPanel form = new JPanel(new GridLayout(3, 2, 10, 10));
 
         txtNama = new JTextField();
         txtJumlah = new JTextField();
         cbJenis = new JComboBox<>(new String[]{"Uang", "Pakaian", "Sembako"});
 
-        JButton btnSimpan = new JButton("Simpan");
-        btnSimpan.addActionListener(e -> simpanData());
+        form.add(new JLabel("Nama Donatur"));
+        form.add(txtNama);
+        form.add(new JLabel("Jumlah"));
+        form.add(txtJumlah);
+        form.add(new JLabel("Jenis Donasi"));
+        form.add(cbJenis);
 
-        setLayout(new GridLayout(5, 2, 10, 10));
-        add(new JLabel("Nama Donatur"));
-        add(txtNama);
-        add(new JLabel("Jumlah"));
-        add(txtJumlah);
-        add(new JLabel("Jenis Donasi"));
-        add(cbJenis);
-        add(new JLabel());
-        add(btnSimpan);
+        JButton btnSimpan = new JButton("Simpan");
+        JButton btnKembali = new JButton("Kembali");
+
+        btnSimpan.addActionListener(e -> simpanData());
+        btnKembali.addActionListener(e -> {
+            new TampilanAwalFrame();
+            dispose();
+        });
+
+        JPanel panelButton = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        panelButton.add(btnKembali);
+        panelButton.add(btnSimpan);
+
+        setLayout(new BorderLayout(10, 10));
+        add(form, BorderLayout.CENTER);
+        add(panelButton, BorderLayout.SOUTH);
 
         setVisible(true);
     }
+
 
     private void simpanData() {
         try {
@@ -51,12 +65,10 @@ public class DonasiFormFrame extends JFrame {
                 throw new Exception("Jumlah harus lebih dari 0");
             }
 
-            // ✅ SIMPAN DATA
             Donasi donasi = new Donasi(nama, jenis, jumlah);
             DonasiRepository.tambah(donasi);
 
             JOptionPane.showMessageDialog(this, "Donasi berhasil disimpan");
-            dispose();
 
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Jumlah harus berupa angka");

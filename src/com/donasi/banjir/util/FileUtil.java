@@ -3,15 +3,13 @@ package com.donasi.banjir.util;
 import com.donasi.banjir.model.Donasi;
 
 import java.io.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class FileUtil {
 
     private static final String FILE_PATH = "data/donasi.csv";
 
-    // ===============================
-    // BACA DATA
-    // ===============================
     public static ArrayList<Donasi> bacaData() {
         ArrayList<Donasi> list = new ArrayList<>();
 
@@ -24,14 +22,13 @@ public class FileUtil {
             while ((line = br.readLine()) != null) {
                 String[] data = line.split(",");
 
-                // FORMAT CSV:
-                // tanggal waktu,nama,jenis,jumlah
+                LocalDateTime tanggal = LocalDateTime.parse(data[0]);
                 String nama = data[1];
                 String jenis = data[2];
                 int jumlah = Integer.parseInt(data[3]);
 
-                // ⬇ TANGGAL DISET OTOMATIS
-                list.add(new Donasi(nama, jenis, jumlah));
+                Donasi d = new Donasi(nama, jenis, jumlah, tanggal);
+                list.add(d);
             }
 
         } catch (Exception e) {
@@ -41,9 +38,6 @@ public class FileUtil {
         return list;
     }
 
-    // ===============================
-    // SIMPAN DATA
-    // ===============================
     public static void simpanSemua(ArrayList<Donasi> list) {
         File file = new File(FILE_PATH);
 
